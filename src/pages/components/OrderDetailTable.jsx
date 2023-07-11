@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableHead,
@@ -6,11 +6,20 @@ import {
   TableRow,
   TableCell,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/RemoveCircle";
 import AddIcon from "@mui/icons-material/AddCircle";
+import UpIcon from "@mui/icons-material/ArrowCircleUp";
+import NoteIcon from "@mui/icons-material/NoteAdd";
+import NoteDialog from "./NoteDialog";
 
 const OrderDetailTable = ({ order, setOrder, orderDetail, setOrderDetail }) => {
+  const [openNoteDialog, setOpenNoteDialog] = useState({
+    open: false,
+    item: null,
+  });
+
   useEffect(() => {
     setOrder({
       ...order,
@@ -37,58 +46,49 @@ const OrderDetailTable = ({ order, setOrder, orderDetail, setOrderDetail }) => {
     Number(order.shippingFee);
 
   const handleAddQuantity = (item) => {
-    // Nếu món là món tự chọn
-    if (item.categoryID === 7) {
+    setOrderDetail(
+      orderDetail.map((x) =>
+        x.productName === item.productName
+          ? { ...x, quantity: Number(x.quantity) + 1 }
+          : x
+      )
+    );
+  };
+
+  const handleSubtractQuantity = (item) => {
+    if (item.quantity > 1) {
       setOrderDetail(
         orderDetail.map((x) =>
-          x._id === item._id &&
-          x.productName === item.productName &&
-          x.price === item.price
-            ? { ...x, quantity: Number(x.quantity) + 1 }
+          x.productName === item.productName
+            ? { ...x, quantity: Number(x.quantity) - 1 }
             : x
         )
       );
-    }
-    // Nếu món nằm trong menu
-    else {
+    } else {
       setOrderDetail(
-        orderDetail.map((x) =>
-          x._id === item._id ? { ...x, quantity: Number(x.quantity) + 1 } : x
-        )
+        orderDetail.filter((x) => x.productName !== item.productName)
       );
     }
   };
 
-  const handleSubtractQuantity = (item) => {
-    // Nếu món là món tự chọn
-    if (item.categoryID === 7) {
-      if (item.quantity > 1) {
-        setOrderDetail(
-          orderDetail.map((x) =>
-            x._id === item._id &&
-            x.productName === item.productName &&
-            x.price === item.price
-              ? { ...x, quantity: x.quantity - 1 }
-              : x
-          )
-        );
-      } else {
-        setOrderDetail(orderDetail.filter((x) => x !== item));
-      }
-    }
-    // Nếu món nằm trong menu
-    else {
-      if (item.quantity > 1) {
-        setOrderDetail(
-          orderDetail.map((x) =>
-            x.id === item.id ? { ...x, quantity: Number(x.quantity) - 1 } : x
-          )
-        );
-      } else {
-        setOrderDetail(orderDetail.filter((x) => x.id !== item.id));
-      }
-    }
+  const handleUpsize = (item) => {
+    setOrderDetail(
+      orderDetail.map((x) =>
+        x.productName === item.productName
+          ? {
+              ...x,
+              price: Number(x.price) + 5000,
+              productName:
+                x.productName.indexOf("big size") > 0
+                  ? x.productName
+                  : x.productName + " big size",
+            }
+          : x
+      )
+    );
   };
+
+  const handleAddNote = (item) => {};
 
   return (
     <Table>
@@ -120,18 +120,38 @@ const OrderDetailTable = ({ order, setOrder, orderDetail, setOrderDetail }) => {
             <TableCell>{item.price}</TableCell>
             <TableCell>{item.price * item.quantity}</TableCell>
             <TableCell>
-              <IconButton
-                sx={{ color: "primary.main", marginLeft: 1 }}
-                onClick={() => handleSubtractQuantity(item)}
-              >
-                <RemoveIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                sx={{ color: "primary.main", marginLeft: 1 }}
-                onClick={() => handleAddQuantity(item)}
-              >
-                <AddIcon fontSize="small" />
-              </IconButton>
+              <Tooltip title="Giảm">
+                <IconButton
+                  sx={{ color: "primary.main", marginLeft: 1 }}
+                  onClick={() => handleSubtractQuantity(item)}
+                >
+                  <RemoveIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Thêm">
+                <IconButton
+                  sx={{ color: "primary.main", marginLeft: 1 }}
+                  onClick={() => handleAddQuantity(item)}
+                >
+                  <AddIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Up size">
+                <IconButton
+                  sx={{ color: "primary.main", marginLeft: 1 }}
+                  onClick={() => handleUpsize(item)}
+                >
+                  <UpIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Ghi chú">
+                <IconButton
+                  sx={{ color: "primary.main", marginLeft: 1 }}
+                  onClick={() => setOpenNoteDialog({ open: true, item: item })}
+                >
+                  <NoteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </TableCell>
           </TableRow>
         ))}
@@ -193,6 +213,13 @@ const OrderDetailTable = ({ order, setOrder, orderDetail, setOrderDetail }) => {
           <TableCell colSpan={2}>{order.total}</TableCell>
         </TableRow>
       </TableBody>
+      <NoteDialog
+        open={openNoteDialog.open}
+        handleClose={() => setOpenNoteDialog(false)}
+        orderDetail={orderDetail}
+        setOrderDetail={setOrderDetail}
+        item={openNoteDialog.item}
+      />
     </Table>
   );
 };

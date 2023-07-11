@@ -25,6 +25,7 @@ import {
 } from "state/api/categoryApi";
 
 const headCells = [
+  { id: "_id", label: "ID" },
   { id: "categoryName", label: "Tên danh mục" },
   { id: "createdAt", label: "Ngày tạo" },
   { id: "", label: "" },
@@ -96,6 +97,7 @@ const CategoryList = ({ setIsEditing, setItem }) => {
           >
             {records().map((item, idx) => (
               <TableRow key={`Categories-${idx}`}>
+                <TableCell>{item._id}</TableCell>
                 <TableCell>{item.categoryName}</TableCell>
                 <TableCell>{formatDatetime(item.createdAt)}</TableCell>
                 <TableCell>

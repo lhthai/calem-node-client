@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 
 export default function useTable(items, headCells, filterFn) {
-  const pages = [5, 10, 20];
+  const pages = [10, 15, 20];
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
   const [order, setOrder] = useState();

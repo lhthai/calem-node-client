@@ -23,7 +23,7 @@ const CreateOrderPage = () => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item md={6} xs={12}>
+      <Grid item md={7} xs={12}>
         <CreateOrder
           order={order}
           setOrder={setOrder}
@@ -35,7 +35,7 @@ const CreateOrderPage = () => {
           }}
         />
       </Grid>
-      <Grid item md={6} xs={12}>
+      <Grid item md={5} xs={12}>
         <MenuList orderDetail={orderDetail} setOrderDetail={setOrderDetail} />
       </Grid>
     </Grid>
