@@ -34,9 +34,7 @@ const MenuList = ({ orderDetail, setOrderDetail }) => {
       setOrderDetail([
         ...orderDetail,
         {
-          productID: product._id,
           productName: product.productName,
-          categoryID: product.categoryID,
           categoryName: product.categoryName,
           price: product.price,
           quantity: 1,
